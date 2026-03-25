@@ -46,13 +46,13 @@ pipeline {
 
     stage('Package') {
       steps {
-        sh "tar -czf ${ARTIFACT_NAME} ${BUILD_FOLDER}"
+        sh "tar -czf ${env.ARTIFACT_NAME} ${env.BUILD_FOLDER}"
       }
     }
 
     stage('Archive') {
       steps {
-        archiveArtifacts artifacts: "${ARTIFACT_NAME}", fingerprint: true
+        archiveArtifacts artifacts: "${env.ARTIFACT_NAME}", fingerprint: true
       }
     }
 
@@ -60,7 +60,7 @@ pipeline {
       steps {
         sh """
             cd ansible && ansible-playbook -i inventory deploy.yml \
-            --extra-vars "release_id=${RELEASE_ID} artifact_name=${ARTIFACT_NAME}"
+            --extra-vars "release_id=${env.RELEASE_ID} artifact_name=${env.ARTIFACT_NAME}"
         """
       }
     }
@@ -71,7 +71,7 @@ pipeline {
             for i in {1..10}; do
                 sleep 3
 
-                if curl -f ${TARGET_URL} > /dev/null 2>&1; then
+                if curl -f ${env.TARGET_URL} > /dev/null 2>&1; then
                     echo "App is healthy"
                     exit 0
                 fi
@@ -90,7 +90,7 @@ pipeline {
 
     success {
       build job: 'security-scan', parameters: [
-        string(name: 'TARGET_URL', value: "${TARGET_URL}")
+        string(name: 'TARGET_URL', value: "${env.TARGET_URL}")
       ]
     }
 
