@@ -39,7 +39,7 @@
 
     - name: Switch to new release
       file:
-        src: "{{ release_path }}/build"
+        src: "{{ release_path }}/dist"
         dest: "{{ deploy_base }}/current"
         state: link
         follow: no
