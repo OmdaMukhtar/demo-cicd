@@ -13,6 +13,7 @@ pipeline {
     ARTIFACT_NAME = "${APP_NAME}-${BUILD_NUMBER}.tar.gz"
     TARGET_URL = "http://192.168.0.191"
     RELEASE_ID = "${new Date().format('yyyyMMddHHmmss')}"
+    BUILD_FOLDER="dist"
   }
 
   stages {
@@ -45,7 +46,7 @@ pipeline {
 
     stage('Package') {
       steps {
-        sh "tar -czf ${ARTIFACT_NAME} build"
+        sh "tar -czf ${ARTIFACT_NAME} ${BUILD_FOLDER}"
       }
     }
 
