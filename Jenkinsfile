@@ -59,7 +59,7 @@ pipeline {
     stage('Deploy with Ansible') {
       steps {
         sh """
-            cd ansible && ansible-playbook -i inventory.ini deploy.yml \
+            cd ansible && ansible-playbook deploy.yml \
             --extra-vars "release_id=${env.RELEASE_ID} artifact_name=${env.ARTIFACT_NAME}"
         """
       }
