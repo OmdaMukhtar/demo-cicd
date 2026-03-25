@@ -7,7 +7,7 @@ pipeline {
   }
 
   environment {
-    PROJECT_URL = "git@github.com:OmdaMukhtar/demo-vuejs.git"
+    PROJECT_URL = "git@github.com:OmdaMukhtar/demo-cicd.git"
     BRANCH_NAME = "master"
     APP_NAME = "my-demo-vuejs"
     ARTIFACT_NAME = "${APP_NAME}-${BUILD_NUMBER}.tar.gz"
