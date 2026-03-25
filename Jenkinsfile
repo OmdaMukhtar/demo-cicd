@@ -56,6 +56,18 @@ pipeline {
       }
     }
 
+    stage('Configure SSH with Remote Server and Container') {
+      steps {
+        sshagent(['ssh-id']) {
+            sh """
+            # add ip to the know list of the docker
+            mkdir -p ~/.ssh
+            ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
+            """
+        }
+      }
+    }
+
     stage('Deploy with Ansible') {
       steps {
         sh """
@@ -95,7 +107,7 @@ pipeline {
     }
 
     failure {
-      sh "ansible-playbook -i inventory rollback.yml"
+      sh "cd ansible && ansible-playbook rollback.yml"
     }
   }
 }
