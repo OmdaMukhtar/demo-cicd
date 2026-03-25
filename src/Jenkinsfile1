@@ -1,0 +1,119 @@
+pipeline {
+  environment {
+    PROJECT_URL = "git@github.com:OmdaMukhtar/react-portfolio.git"
+    BRANCH_NAME="dev"
+    ARTIFACT_DIR = "build"
+    APP_NAME = "my-profile"
+    DEPLOY_BASE = "/var/www/html"
+    RELEASE_ID = "${new Date().format('yyyyMMddHHmmss')}"
+    RELEASE_PATH = "${DEPLOY_BASE}/releases/${RELEASE_ID}"
+    ARTIFACT_NAME = "${APP_NAME}-${BUILD_NUMBER}.tar.gz"
+    TARGET_URL="http://192.168.0.191"
+  }
+
+  agent {
+    docker {
+        image 'node:22'
+        args '-u root -v /var/jenkins_home/npm-cache:/root/.npm'   // fix permission issues (alternative solution)
+      }
+  }
+
+  stages {
+    stage('Clone') {
+      steps {
+        git credentialsId: 'omda-git', url: env.PROJECT_URL , branch: "${env.BRANCH_NAME}"
+      }
+    }
+
+    stage('Install') {
+      steps {
+        sh '''
+          npm config set cache /root/.npm --global
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm install
+        '''
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh '''
+          npm config set cache /root/.npm --global
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm run build
+        '''
+      }
+    }
+
+    stage('Package Artifact') {
+      steps {
+        sh """
+          tar -czf ${env.ARTIFACT_NAME} build
+        """
+      }
+    }
+
+    // make it persistent
+    stage('Archive Artifact') {
+      steps {
+        archiveArtifacts artifacts: "${env.ARTIFACT_NAME}", fingerprint: true
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sshagent(['ssh-id']) {
+            sh """
+            # add ip to the know list of the docker
+            mkdir -p ~/.ssh
+            ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
+
+            # Create release folder on server
+            ssh vboxuser@192.168.0.191 "mkdir -p ${RELEASE_PATH}"
+
+            # Copy artifact
+            scp ${env.ARTIFACT_NAME} vboxuser@192.168.0.191:${RELEASE_PATH}
+
+            # Extract artifact on server
+            #ssh vboxuser@192.168.0.191 "cd ${RELEASE_PATH} && tar -xzf ${env.ARTIFACT_NAME}"
+
+            ssh vboxuser@192.168.0.191 '
+              tar -xzf ${RELEASE_PATH}/${ARTIFACT_NAME} -C ${RELEASE_PATH} &&
+              ln -sfn ${RELEASE_PATH}/build /var/www/html/current
+            '
+            # Update current symlink (atomic deployment)
+            #ssh vboxuser@192.168.0.191 "ln -sfn ${RELEASE_PATH}/build /var/www/html/current"
+            """
+        }
+      }
+    }
+
+    // Check health of the deployment
+    stage('Health Check') {
+      steps {
+        sh '''
+          for i in {1..10}; do
+            sleep 3
+            if curl -f http://192.168.0.191 > /dev/null 2>&1; then
+              echo "App is healthy"
+              exit 0
+            fi
+            echo "Waiting for app..."
+          done
+
+          echo "App is NOT healthy xxx
+          exit 1
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      // Call Security Pipeline
+      build job: 'security-scan', parameters: [
+        string(name: 'TARGET_URL', value: "${env.TARGET_URL}")
+      ]
+    }
+  }
+}

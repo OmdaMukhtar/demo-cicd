@@ -1,0 +1,21 @@
+- name: Rollback Application
+  hosts: web
+  become: yes
+
+  vars:
+    deploy_base: "/var/www/html"
+
+  tasks:
+
+    - name: Check previous symlink
+      stat:
+        path: "{{ deploy_base }}/previous"
+      register: prev
+
+    - name: Rollback
+      file:
+        src: "{{ prev.stat.lnk_source }}"
+        dest: "{{ deploy_base }}/current"
+        state: link
+        force: yes
+      when: prev.stat.islnk is defined and prev.stat.islnk

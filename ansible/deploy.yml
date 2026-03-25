@@ -1,0 +1,45 @@
+- name: Deploy React App
+  hosts: web
+  become: yes
+
+  vars:
+    deploy_base: "/var/www/html"
+    release_path: "{{ deploy_base }}/releases/{{ release_id }}"
+    artifact_name: "{{ artifact_name }}"
+
+  tasks:
+
+    - name: Create release directory
+      file:
+        path: "{{ release_path }}"
+        state: directory
+
+    - name: Copy artifact
+      copy:
+        src: "{{ artifact_name }}"
+        dest: "{{ release_path }}/{{ artifact_name }}"
+
+    - name: Extract artifact
+      unarchive:
+        src: "{{ release_path }}/{{ artifact_name }}"
+        dest: "{{ release_path }}"
+        remote_src: yes
+
+    - name: Check current symlink
+      stat:
+        path: "{{ deploy_base }}/current"
+      register: current_link
+
+    - name: Save previous release
+      file:
+        src: "{{ current_link.stat.lnk_source }}"
+        dest: "{{ deploy_base }}/previous"
+        state: link
+      when: current_link.stat.islnk is defined and current_link.stat.islnk
+
+    - name: Switch to new release
+      file:
+        src: "{{ release_path }}/build"
+        dest: "{{ deploy_base }}/current"
+        state: link
+        force: yes

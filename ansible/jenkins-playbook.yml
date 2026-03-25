@@ -1,0 +1,33 @@
+---
+- name: Install Jenkins Server
+  become: yes
+  hosts: jenkins
+  roles:
+  # - geerlingguy.java
+  - name: geerlingguy.jenkins
+    vars:
+      jenkins_hostname: jenkins.example.com
+
+      jenkins_plugins:
+        - matrix-auth
+        - role-strategy
+        - credentials
+        - ssh-credentials
+        - git
+        - workflow-aggregator
+
+      jenkins_security_realm: local
+      jenkins_authorization_strategy: role-based
+
+      jenkins_users:
+        - username: admin
+          password: admin!
+
+        - username: dev
+          password: dev!
+
+      jenkins_credentials:
+        - id: "server-ssh"
+          username: "ubuntu"
+          type: "ssh"
+          private_key: "{{ lookup('file', '/home/emadaldeen/.ssh/id_rsa') }}"
