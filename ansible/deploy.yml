@@ -42,4 +42,5 @@
         src: "{{ release_path }}/build"
         dest: "{{ deploy_base }}/current"
         state: link
+        follow: no
         force: yes
