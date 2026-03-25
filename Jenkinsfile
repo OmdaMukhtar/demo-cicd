@@ -35,7 +35,7 @@ pipeline {
     stage('Install & Build') {
       steps {
         sh '''
-          rm -rf node_modules package-lock.json
+          rm -rf package-lock.json
           npm config set cache /root/.npm --global
           export NODE_OPTIONS=--openssl-legacy-provider
           npm install
@@ -74,10 +74,12 @@ pipeline {
 
     stage('Deploy with Ansible') {
       steps {
-        sh """
+        sshagent(['ssh-id']) {
+          sh """
             cd ansible && ansible-playbook deploy.yml \
             --extra-vars "release_id=${env.RELEASE_ID} artifact_name=${env.ARTIFACT_NAME}"
-        """
+          """
+        }
       }
     }
 
@@ -111,7 +113,9 @@ pipeline {
     }
 
     failure {
-      sh "cd ansible && ansible-playbook rollback.yml"
+      sshagent(['ssh-id']) {
+        sh "cd ansible && ansible-playbook rollback.yml"
+      }
     }
   }
 }
