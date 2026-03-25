@@ -77,7 +77,7 @@ pipeline {
         sshagent(['ssh-id']) {
           sh """
             cd ansible && ansible-playbook deploy.yml \
-            --extra-vars "release_id=${env.RELEASE_ID} artifact_name=${env.ARTIFACT_NAME}"
+            --extra-vars "release_id=${env.RELEASE_ID} artifact_name=../${env.ARTIFACT_NAME}"
           """
         }
       }
