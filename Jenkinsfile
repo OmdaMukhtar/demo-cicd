@@ -1,9 +1,10 @@
 pipeline {
   agent {
     docker {
-      image '18474542/demo-cicd-vue:latest'
+      // image '18474542/demo-cicd-vue:latest'
+      image 'node:22'
       args '-u root -v /var/jenkins_home/npm-cache:/root/.npm'
-      registryCredentialsId 'docker-hub-registry'
+      // registryCredentialsId 'docker-hub-registry'
     }
   }
 
@@ -57,30 +58,30 @@ pipeline {
       }
     }
 
-    stage('Configure SSH with Remote Server and Container') {
-      steps {
-        sshagent(['ssh-id']) {
-            sh """
-              # add ip to the know list of the docker
-              mkdir -p ~/.ssh
-              echo '192.168.0.191 app1' >> /etc/hosts
-              echo '192.168.0.192 app2' >> /etc/hosts
+    // stage('Configure SSH with Remote Server and Container') {
+    //   steps {
+    //     sshagent(['ssh-id']) {
+    //         sh """
+    //           # add ip to the know list of the docker
+    //           mkdir -p ~/.ssh
+    //           echo '192.168.0.191 app1' >> /etc/hosts
+    //           echo '192.168.0.192 app2' >> /etc/hosts
 
-              ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
-              ssh-keyscan -H 192.168.0.192 >> ~/.ssh/known_hosts
-            """
-        }
-      }
-    }
+    //           ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
+    //           ssh-keyscan -H 192.168.0.192 >> ~/.ssh/known_hosts
+    //         """
+    //     }
+    //   }
+    // }
 
     stage('Deploy with Ansible') {
       steps {
-        sshagent(['ssh-id']) {
+        // sshagent(['ssh-id']) {
           sh """
             cd ansible && ansible-playbook deploy.yml \
             --extra-vars "release_id=${env.RELEASE_ID} artifact_name=../${env.ARTIFACT_NAME}"
           """
-        }
+        // }
       }
     }
 
@@ -114,9 +115,9 @@ pipeline {
     }
 
     failure {
-      sshagent(['ssh-id']) {
+      // sshagent(['ssh-id']) {
         sh "cd ansible && ansible-playbook rollback.yml"
-      }
+      // }
     }
   }
 }

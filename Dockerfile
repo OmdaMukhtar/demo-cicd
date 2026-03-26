@@ -1,5 +1,6 @@
-# Build stage
-FROM node:22 AS build
+FROM node:22
+
+RUN apt update && apt install -y ansible sshpass openssh-client nginx
 
 WORKDIR /app
 COPY package*.json ./
@@ -7,12 +8,5 @@ RUN npm install
 
 COPY . .
 RUN npm run build
-
-# Serve stage
-FROM nginx:alpine
-RUN apk add --no-cache ansible sshpass openssh-client
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
