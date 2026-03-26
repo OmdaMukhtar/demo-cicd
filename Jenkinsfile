@@ -41,7 +41,7 @@ pipeline {
 
     stage('Package') {
       steps {
-        sh "tar -czf ${env.ARTIFACT_NAME} -C ${env.BUILD_FOLDER} . "
+        sh "tar -czf ${env.ARTIFACT_NAME} ${env.BUILD_FOLDER}"
       }
     }
 
