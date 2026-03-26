@@ -15,6 +15,7 @@
         state: directory
         group: www-data
         owner: www-data
+        recurse: yes
         mode: 0765
 
     - name: Copy artifact
@@ -38,6 +39,8 @@
         src: "{{ current_link.stat.lnk_source }}"
         dest: "{{ deploy_base }}/previous"
         state: link
+        owner: www-data
+        group: www-data
       when: current_link.stat.islnk is defined and current_link.stat.islnk and current_link.stat.exists
 
     - name: Switch to new release
@@ -47,6 +50,8 @@
         state: link
         follow: no
         force: yes
+        owner: www-data
+        group: www-data
 
     # - name: Clean up artifact file
     #   file:

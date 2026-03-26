@@ -83,9 +83,9 @@ pipeline {
         sh """
           set -x
 
-          for i in \$(seq 1 20); do
+          for i in \$(seq 1 10); do
               echo "Attempt \$i..."
-              sleep 5
+              sleep 3
 
               if curl -f http://192.168.0.191 > /dev/null 2>&1; then
                   echo "App is healthy"
