@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image '18474542/demo-cicd-vue:latest'
-      args '-u root -v /var/jenkins_home/npm-cache:/root/.npm'
+      args '--network host -u root -v /var/jenkins_home/npm-cache:/root/.npm'
       registryCredentialsId 'docker-hub-registry'
     }
   }
@@ -87,7 +87,7 @@ pipeline {
               echo "Attempt \$i..."
               sleep 5
 
-              if curl -f http://host.docker.internal:192.168.0.191 > /dev/null 2>&1; then
+              if curl -f http://192.168.0.191 > /dev/null 2>&1; then
                   echo "App is healthy"
                   exit 0
               fi
