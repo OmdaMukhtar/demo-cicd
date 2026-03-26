@@ -47,3 +47,8 @@
         state: link
         follow: no
         force: yes
+
+    # - name: Clean up artifact file
+    #   file:
+    #     path: "{{ release_path }}/{{ artifact_name }}"
+    #     state: absent
