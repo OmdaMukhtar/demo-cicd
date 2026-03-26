@@ -26,3 +26,4 @@ repo/
   - uploads
   - logs
 - Add release cleanup policy (keep last 5)
+- Move all variables to Jenkins Environment.
