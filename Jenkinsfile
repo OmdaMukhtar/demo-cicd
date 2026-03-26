@@ -27,12 +27,6 @@ pipeline {
       }
     }
 
-    // stage('Install Dependency Ansible On Container'){
-    //     steps{
-    //         sh 'apt update && apt install -y ansible sshpass'
-    //     }
-    // }
-
     stage('Install & Build') {
       steps {
         sh '''
@@ -89,10 +83,11 @@ pipeline {
         sh """
           set -x
 
-          for i in \$(seq 1 10); do
-              sleep 3
+          for i in \$(seq 1 20); do
+              echo "Attempt \$i..."
+              sleep 5
 
-              if curl -f ${env.TARGET_URL} > /dev/null 2>&1; then
+              if curl -f http://host.docker.internal:192.168.0.191 > /dev/null 2>&1; then
                   echo "App is healthy"
                   exit 0
               fi
