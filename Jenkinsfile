@@ -57,21 +57,21 @@ pipeline {
       }
     }
 
-    // stage('Configure SSH with Remote Server and Container') {
-    //   steps {
-    //     sshagent(['ssh-id']) {
-    //         sh """
-    //           # add ip to the know list of the docker
-    //           mkdir -p ~/.ssh
-    //           echo '192.168.0.191 app1' >> /etc/hosts
-    //           echo '192.168.0.192 app2' >> /etc/hosts
+    stage('Configure SSH with Remote Server and Container') {
+      steps {
+        sshagent(['ssh-id']) {
+            sh """
+              # add ip to the know list of the docker
+              mkdir -p ~/.ssh
+              echo '192.168.0.191 app1' >> /etc/hosts
+              echo '192.168.0.192 app2' >> /etc/hosts
 
-    //           ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
-    //           ssh-keyscan -H 192.168.0.192 >> ~/.ssh/known_hosts
-    //         """
-    //     }
-    //   }
-    // }
+              ssh-keyscan -H 192.168.0.191 >> ~/.ssh/known_hosts
+              ssh-keyscan -H 192.168.0.192 >> ~/.ssh/known_hosts
+            """
+        }
+      }
+    }
 
     stage('Deploy with Ansible') {
       steps {
