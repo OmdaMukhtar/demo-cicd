@@ -86,21 +86,25 @@ pipeline {
 
     stage('Health Check') {
       steps {
-        sh """
-            for i in {1..10}; do
-                sleep 3
+        sh '''
+          set -x
+          #!/bin/bash
+          set -x
 
-                if curl -f ${env.TARGET_URL} > /dev/null 2>&1; then
-                    echo "App is healthy"
-                    exit 0
-                fi
+          for i in {1..10}; do
+              sleep 3
 
-                echo "Waiting..."
-            done
+              if curl -f ${TARGET_URL} > /dev/null 2>&1; then
+                  echo "App is healthy"
+                  exit 0
+              fi
 
-            echo "App is NOT healthy"
-            exit 1
-        """
+              echo "Waiting..."
+          done
+
+          echo "App is NOT healthy"
+          exit 1
+        '''
       }
     }
   }
