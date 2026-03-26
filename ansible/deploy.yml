@@ -27,6 +27,8 @@
       unarchive:
         src: "{{ release_path }}/{{ artifact_name }}"
         dest: "{{ release_path }}"
+        group: www-data
+        owner: www-data
         remote_src: yes
 
     - name: Check current symlink
