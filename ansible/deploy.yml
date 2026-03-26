@@ -24,7 +24,7 @@
 
     - name: Extract artifact
       unarchive:
-        src: "{{ release_path }}/{{ artifact_namesdf }}"
+        src: "{{ release_path }}/{{ artifact_name }}"
         dest: "{{ release_path }}"
         remote_src: yes
 

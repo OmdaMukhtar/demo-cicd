@@ -3,7 +3,7 @@
     <h1>{{ appName }}</h1>
     <p><strong>Build:</strong> {{ buildNumber }}</p>
     <p><strong>Deployed At:</strong> {{ deployedAt }}</p>
-    <p><strong>Status:</strong> <span class="success">{{ status }}</span></p>
+    <p><strong>Status of the Deployment:</strong> <span class="success">{{ status }}</span></p>
     <p><strong>URL:</strong> {{ url }}</p>
   </div>
 </template>
