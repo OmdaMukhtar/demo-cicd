@@ -13,6 +13,9 @@
       file:
         path: "{{ release_path }}"
         state: directory
+        group: www-data
+        owner: www-data
+        mode: 0765
 
     - name: Copy artifact
       copy:
