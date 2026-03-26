@@ -1,10 +1,9 @@
 pipeline {
   agent {
     docker {
-      // image '18474542/demo-cicd-vue:latest'
-      image 'node:22'
+      image '18474542/demo-cicd-vue:latest'
       args '-u root -v /var/jenkins_home/npm-cache:/root/.npm'
-      // registryCredentialsId 'docker-hub-registry'
+      registryCredentialsId 'docker-hub-registry'
     }
   }
 
@@ -76,12 +75,12 @@ pipeline {
 
     stage('Deploy with Ansible') {
       steps {
-        // sshagent(['ssh-id']) {
+        sshagent(['ssh-id']) {
           sh """
             cd ansible && ansible-playbook deploy.yml \
             --extra-vars "release_id=${env.RELEASE_ID} artifact_name=../${env.ARTIFACT_NAME}"
           """
-        // }
+        }
       }
     }
 
@@ -115,9 +114,9 @@ pipeline {
     }
 
     failure {
-      // sshagent(['ssh-id']) {
+      sshagent(['ssh-id']) {
         sh "cd ansible && ansible-playbook rollback.yml"
-      // }
+      }
     }
   }
 }
