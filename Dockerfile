@@ -10,7 +10,7 @@ RUN npm run build
 
 # Serve stage
 FROM nginx:alpine
-
+RUN apk add --no-cache ansible sshpass openssh-client
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80

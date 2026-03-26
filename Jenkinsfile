@@ -1,8 +1,9 @@
 pipeline {
   agent {
     docker {
-      image 'node:22'
+      image '18474542/demo-cicd-vue:latest'
       args '-u root -v /var/jenkins_home/npm-cache:/root/.npm'
+      registryCredentialsId 'docker-hub-registry'
     }
   }
 
@@ -26,11 +27,11 @@ pipeline {
       }
     }
 
-    stage('Install Dependency Ansible On Container'){
-        steps{
-            sh 'apt update && apt install -y ansible sshpass'
-        }
-    }
+    // stage('Install Dependency Ansible On Container'){
+    //     steps{
+    //         sh 'apt update && apt install -y ansible sshpass'
+    //     }
+    // }
 
     stage('Install & Build') {
       steps {
