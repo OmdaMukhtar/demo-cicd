@@ -30,7 +30,6 @@ pipeline {
     stage('Install & Build') {
       steps {
         sh '''
-          rm -rf package-lock.json
           npm config set cache /root/.npm --global
           export NODE_OPTIONS=--openssl-legacy-provider
           npm ci
