@@ -77,10 +77,8 @@ JENKINS-PROJECT/
 
 ## Recommendations / Enhancements
 
-- Implement automatic rollback on health check failure.
 - Enable deployment lock to prevent concurrent deployments.
 - Add database migration stage for backend changes.
-- Support blue/green deployments with symlink switching.
 - Use a shared directory for persistent files:
   - .env
   - Uploads
@@ -88,4 +86,5 @@ JENKINS-PROJECT/
 - Configure release cleanup policy (e.g., keep last 5 releases).
 - Move all pipeline variables to Jenkins Environment Variables.
 - Optimize pipeline performance.
+  - Use npm ci instead of npm install
 - Integrate Trivy or other scanners for Docker image security.

@@ -1,0 +1,16 @@
+- name: Health Check for Web Servers
+  hosts: web
+  gather_facts: no
+  tasks:
+  - name: Check application health
+    uri:
+      url: "http://{{ inventory_hostname }}"
+      method: GET
+      status_code: 200
+      timeout: 5
+      validate_certs: no
+      return_content: yes
+    register: result
+    retries: 10
+    delay: 3
+    until: result.status == 200 and "'<html>' in result.content"

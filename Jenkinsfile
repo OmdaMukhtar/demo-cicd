@@ -8,16 +8,25 @@ pipeline {
   }
 
   environment {
-    PROJECT_URL = "git@github.com:OmdaMukhtar/demo-cicd.git"
     BRANCH_NAME = "master"
     APP_NAME = "my-demo-vuejs"
     ARTIFACT_NAME = "${APP_NAME}-${BUILD_NUMBER}.tar.gz"
-    TARGET_URL = "http://192.168.0.191"
     RELEASE_ID = "${new Date().format('yyyyMMddHHmmss')}"
     BUILD_FOLDER="dist"
+
+    PROJECT_URL = credentials('git-repo-url')
+    TARGET_URL  = credentials('target-url')
   }
 
   stages {
+
+    stage('Clone') {
+      steps {
+        withCredentials([string(credentialsId: 'git-repo-url', variable: 'PROJECT_URL')]) {
+          git credentialsId: 'omda-git', url: "${PROJECT_URL}", branch: "${env.BRANCH_NAME}"
+        }
+      }
+    }
 
     stage('Clone') {
       steps {
@@ -79,24 +88,11 @@ pipeline {
 
     stage('Health Check') {
       steps {
-        sh """
-          set -x
-
-          for i in \$(seq 1 10); do
-              echo "Attempt \$i..."
-              sleep 3
-
-              if curl -f http://192.168.0.191 > /dev/null 2>&1; then
-                  echo "App is healthy"
-                  exit 0
-              fi
-
-              echo "Waiting..."
-          done
-
-          echo "App is NOT healthy"
-          exit 1
-        """
+        sshagent(['ssh-id']) {
+          sh '''
+            cd ansible && ansible-playbook health-check.yml
+          '''
+        }
       }
     }
   }
