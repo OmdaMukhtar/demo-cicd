@@ -33,7 +33,7 @@ pipeline {
           rm -rf package-lock.json
           npm config set cache /root/.npm --global
           export NODE_OPTIONS=--openssl-legacy-provider
-          npm install
+          npm ci
           npm run build
         '''
       }
