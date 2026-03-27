@@ -28,14 +28,6 @@ pipeline {
       }
     }
 
-    stage('Clone') {
-      steps {
-        git credentialsId: 'omda-git',
-            url: env.PROJECT_URL,
-            branch: env.BRANCH_NAME
-      }
-    }
-
     stage('Install & Build') {
       steps {
         sh '''
