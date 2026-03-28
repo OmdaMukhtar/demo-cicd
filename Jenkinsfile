@@ -109,7 +109,9 @@ pipeline {
   post {
 
     success {
-      echo "deployment successeded"
+      build job: 'security-scan', parameters: [
+        string(name: 'TARGET_URL', value: "${env.TARGET_URL}")
+      ]
     }
 
     failure {
