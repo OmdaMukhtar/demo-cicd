@@ -43,8 +43,9 @@ pipeline {
     stage('Security Scan File System') {
       steps {
         script {
-            def cachePath = "/var/jenkins_home/trivy-cache"
+            def cachePath = "/var/lib/jenkins/trivy-cache"
 
+            // Running inside the container ensures we use the same workspace
             docker.image('ghcr.io/aquasecurity/trivy:0.42.0').inside(
             "--entrypoint='' -u root -v ${cachePath}:/root/.cache/trivy") {
                 sh '''

@@ -1,0 +1,57 @@
+---
+- name: Install Trivy on Jenkins Node
+  hosts: jenkins
+  become: yes
+  gather_facts: yes
+
+  tasks:
+  - name: Install required packages
+    apt:
+      name:
+        - wget
+        - apt-transport-https
+        - gnupg
+        - lsb-release
+      state: present
+      update_cache: yes
+
+  - name: Add Trivy GPG key
+    shell: |
+      wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+    args:
+      executable: /bin/bash
+
+  - name: Add Trivy repository
+    shell: |
+      echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" \
+      | tee /etc/apt/sources.list.d/trivy.list
+    args:
+      executable: /bin/bash
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Trivy
+    apt:
+      name: trivy
+      state: present
+
+  - name: Verify Trivy installation
+    command: trivy --version
+    register: trivy_version
+
+  - name: Show Trivy version
+    debug:
+      var: trivy_version.stdout
+
+  - name: Create Trivy cache directory
+    file:
+      path: /var/jenkins_home/trivy-cache
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: '0755'
+
+  - name: Pre-download Trivy DB
+    command: trivy image --download-db-only

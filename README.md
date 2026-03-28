@@ -84,7 +84,3 @@ JENKINS-PROJECT/
   - Uploads
   - Logs
 - Configure release cleanup policy (e.g., keep last 5 releases).
-- Move all pipeline variables to Jenkins Environment Variables.
-- Optimize pipeline performance.
-  - Use npm ci instead of npm install
-- Integrate Trivy or other scanners for Docker image security.
